@@ -57,7 +57,12 @@ export function ErrorNotice({ error, onRetry }: { error: unknown; onRetry?: () =
       <CircleAlert strokeWidth={1.9} aria-hidden />
       <div style={{ flex: 1 }}>
         <div>{errorMessage(error)}</div>
-        {onRetry && !(error instanceof ApiError && error.status === 404) && (
+        {error instanceof ApiError && error.status === 401 ? (
+          <a href="/connexion?mode=code" className="linkbtn" style={{ paddingLeft: 0 }}>
+            Me reconnecter
+          </a>
+        ) : null}
+        {onRetry && !(error instanceof ApiError && (error.status === 404 || error.status === 401)) && (
           <button type="button" className="linkbtn" style={{ paddingLeft: 0 }} onClick={onRetry}>
             Réessayer
           </button>

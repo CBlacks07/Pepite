@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext, useCallback, useContext, useRef, useState, type ComponentType, type ReactNode } from 'react';
 
 import { CircleCheck } from './icons';

@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef, type ReactNode } from 'react';
 
 /** Feuille qui monte du bas de l'écran. Fermeture : fond, touche Échap. */

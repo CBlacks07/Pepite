@@ -1,3 +1,5 @@
+import 'server-only';
+
 export class HttpError extends Error {
   constructor(
     public status: number,
@@ -25,6 +27,12 @@ const DB_ERRORS: Record<string, [number, string]> = {
   not_due: [409, "Ce membre n'a rien en attente."],
   already_reminded: [429, 'Tu lui as déjà envoyé un rappel dans les dernières 24 h.'],
   bad_request: [400, 'Requête invalide.'],
+  not_admin: [403, "Accès réservé à l'administration."],
+  note_required: [400, 'Ajoute une note pour expliquer la décision.'],
+  draw_done: [409, 'Ce tirage a déjà eu lieu.'],
+  draw_too_early: [409, 'Le tirage ne peut pas avoir lieu avant dimanche 20 h (heure de Lomé).'],
+  no_prizes: [409, "Ajoute au moins un lot avant de lancer le tirage."],
+  max_tickets: [409, 'Cette personne a déjà 4 tickets pour ce tirage.'],
 };
 
 export function json(data: unknown, status = 200, extra?: Record<string, string>): Response {
@@ -47,12 +55,14 @@ function toResponse(err: unknown): Response {
 
 type Params = Record<string, string>;
 type Handler = (request: Request, params: Params) => Promise<Response>;
+// Next.js 16 : les paramètres de route arrivent dans une promesse.
+type RouteContext = { params: Promise<Params> };
 
-/** Enveloppe une route : transforme les erreurs en JSON propre. */
-export function route(fn: Handler): Handler {
-  return async (request, params) => {
+/** Enveloppe une route Next.js : attend les paramètres et transforme les erreurs en JSON propre. */
+export function route(fn: Handler) {
+  return async (request: Request, ctx: RouteContext): Promise<Response> => {
     try {
-      return await fn(request, params ?? {});
+      return await fn(request, (await ctx?.params) ?? {});
     } catch (err) {
       return toResponse(err);
     }

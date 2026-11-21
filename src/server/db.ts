@@ -1,5 +1,7 @@
-// Accès à Neon. Ce fichier ne doit être importé QUE par des routes +api.ts :
-// tout fichier de src/app importé par un écran finit dans le bundle du navigateur.
+// Accès à Neon. Code serveur uniquement : `server-only` fait échouer le build
+// si un composant client l'importe par erreur.
+import 'server-only';
+
 import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
 
 let client: NeonQueryFunction<false, false> | undefined;

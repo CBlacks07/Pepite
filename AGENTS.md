@@ -1,41 +1,35 @@
-This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
+<!-- BEGIN:nextjs-agent-rules -->
 
-## Expo has changed — do not trust your training data
+## This is NOT the Next.js you know
 
-Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
 
-1. Read the major version of the `expo` package in `package.json`.
-2. Fetch the matching versioned docs: `https://docs.expo.dev/versions/v<major>.0.0/`
-3. For anything else, fetch https://docs.expo.dev/llms.txt — an index of all Expo docs with corrections to common LLM misconceptions. Follow its links to the specific page you need; never answer from memory.
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
-## Commands
+<!-- END:nextjs-agent-rules -->
 
-Use `bunx` instead of `npx` if the project uses bun (`bun.lock` present).
+# Pépite
+
+Application web (PWA installable) de tontine entre proches, pour le Togo : montants en francs CFA, heure de Lomé.
+
+## Structure
+
+- `src/app/(public)/` : site public (présentation, connexion, règlement du jeu, conditions, confidentialité).
+- `src/app/app/` : espace membre (`/app`), écrans clients qui appellent l'API avec React Query.
+- `src/app/admin/` : administration (`/admin`), pages serveur réservées aux comptes `is_admin`.
+- `src/app/api/**/route.ts` : API. Toute écriture passe par une fonction SQL (`db/migrations`).
+- `src/server/` : code serveur uniquement (`import 'server-only'`), seul à lire `DATABASE_URL`.
+
+## Commandes
 
 ```bash
-npx expo install <package>  # ALWAYS use instead of npm/yarn/pnpm/bun add — resolves SDK-compatible versions
-npx expo start              # start the dev server
-npx expo lint               # lint
-npx tsc --noEmit            # typecheck
-npx expo-doctor             # diagnose dependency and config issues
-npx expo install --fix      # fix incompatible package versions
+npm run dev          # serveur de développement
+npm run build        # build de production
+npm run lint         # ESLint
+npm run typecheck    # TypeScript
+npm run db:migrate   # applique les migrations SQL sur Neon (.env.local)
+npm run admin:grant  # donne les droits admin à un compte
+npm run test:e2e     # test de bout en bout de l'API (serveur lancé sur le port 3000)
 ```
 
-Run lint and typecheck before declaring any task done.
-
-## Navigation & Routing
-
-- Use **Expo Router** for all navigation. Routes live in `src/app/` — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
-- Import `Link`, `router`, and `useLocalSearchParams` from `expo-router`.
-- Docs: https://docs.expo.dev/router/introduction.md
-
-## Building with EAS
-
-Use EAS to build, sign, and submit the app in the cloud (`eas build`, `eas submit`) and to ship over-the-air updates (`eas update`) — no local Xcode or Android Studio required. Run EAS CLI as `bunx eas-cli <command>` in Bun projects, or `npx eas-cli@latest <command>` otherwise; substitute that for bare `eas` in docs examples.
-Docs: https://docs.expo.dev/eas/index.md
-
-## Rules
-
-- If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
-- Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
-- Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+Lancer lint, typecheck et build avant de considérer une tâche terminée.

@@ -1,5 +1,19 @@
 // Icônes Lucide importées une par une, pour ne pas embarquer toute la bibliothèque.
 export { default as ArrowRight } from 'lucide-react/icons/arrow-right';
+export { default as ArrowLeft } from 'lucide-react/icons/arrow-left';
+export { default as ChartColumn } from 'lucide-react/icons/chart-column';
+export { default as FileText } from 'lucide-react/icons/file-text';
+export { default as Handshake } from 'lucide-react/icons/handshake';
+export { default as LayoutDashboard } from 'lucide-react/icons/layout-dashboard';
+export { default as LogIn } from 'lucide-react/icons/log-in';
+export { default as PartyPopper } from 'lucide-react/icons/party-popper';
+export { default as Scale } from 'lucide-react/icons/scale';
+export { default as Search } from 'lucide-react/icons/search';
+export { default as ShieldAlert } from 'lucide-react/icons/shield-alert';
+export { default as Sparkles } from 'lucide-react/icons/sparkles';
+export { default as UserCheck } from 'lucide-react/icons/user-check';
+export { default as UserX } from 'lucide-react/icons/user-x';
+export { default as UsersRound } from 'lucide-react/icons/users-round';
 export { default as Award } from 'lucide-react/icons/award';
 export { default as BadgeCheck } from 'lucide-react/icons/badge-check';
 export { default as Ban } from 'lucide-react/icons/ban';

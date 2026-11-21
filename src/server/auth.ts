@@ -1,12 +1,18 @@
-// Connexion par téléphone + code à 6 chiffres. La session est un jeton aléatoire
-// envoyé dans un cookie HttpOnly ; la base ne garde que son empreinte SHA-256.
+// Comptes et sessions. Pour l'instant l'inscription se fait avec un prénom seul
+// (pas encore de service SMS) ; un code de secours permet de retrouver son compte
+// sur un autre appareil. La session est un jeton aléatoire dans un cookie HttpOnly ;
+// la base ne garde que son empreinte SHA-256.
+import 'server-only';
+
+import { cookies } from 'next/headers';
+
 import { db } from './db';
 import { HttpError } from './http';
 
 export const SESSION_COOKIE = 'pepite_session';
-const SESSION_DAYS = 60;
+const SESSION_DAYS = 365;
 
-export type SessionUser = { id: string; phone: string; displayName: string | null };
+export type SessionUser = { id: string; displayName: string | null; isAdmin: boolean };
 
 function toHex(buf: ArrayBuffer): string {
   return Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, '0')).join('');
@@ -32,20 +38,20 @@ export function randomString(length: number, alphabet: string): string {
 /** Lettres et chiffres sans confusion possible (pas de 0/O, 1/I/L). */
 export const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 
-/**
- * Numéro au format international. Un numéro à 8 chiffres sans indicatif est
- * considéré comme togolais (+228).
- */
-export function normalizePhone(input: unknown): string | null {
-  if (typeof input !== 'string') return null;
-  let s = input.replace(/[\s.\-()]/g, '');
-  if (s.startsWith('00')) s = '+' + s.slice(2);
-  if (!s.startsWith('+')) {
-    if (/^\d{8}$/.test(s)) s = '+228' + s;
-    else return null;
-  }
-  return /^\+[1-9]\d{7,14}$/.test(s) ? s : null;
+/** Code de secours « ABCD-EFGH ». */
+export function newRecoveryCode(): string {
+  return `${randomString(4, CODE_ALPHABET)}-${randomString(4, CODE_ALPHABET)}`;
 }
+
+/** Accepte « abcd efgh », « ABCDEFGH »… et renvoie « ABCD-EFGH », ou null. */
+export function normalizeRecoveryCode(input: unknown): string | null {
+  if (typeof input !== 'string') return null;
+  const s = input.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (s.length !== 8 || [...s].some((ch) => !CODE_ALPHABET.includes(ch))) return null;
+  return `${s.slice(0, 4)}-${s.slice(4)}`;
+}
+
+export const recoveryHash = (code: string) => sha256(`recovery:${code}`);
 
 function readCookie(request: Request, name: string): string | null {
   const header = request.headers.get('cookie');
@@ -65,10 +71,9 @@ function isHttps(request: Request): boolean {
 
 export async function createSession(userId: string, request: Request): Promise<string> {
   const token = randomString(43, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789');
-  const hash = await sha256(token);
   await db()`
     insert into sessions (token_hash, user_id, expires_at)
-    values (${hash}, ${userId}, now() + make_interval(days => ${SESSION_DAYS}))
+    values (${await sha256(token)}, ${userId}, now() + make_interval(days => ${SESSION_DAYS}))
   `;
   const secure = isHttps(request) ? '; Secure' : '';
   return `${SESSION_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${SESSION_DAYS * 86400}${secure}`;
@@ -81,16 +86,26 @@ export async function destroySession(request: Request): Promise<string> {
   return `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`;
 }
 
-export async function getUser(request: Request): Promise<SessionUser | null> {
-  const token = readCookie(request, SESSION_COOKIE);
+async function userFromToken(token: string | null | undefined): Promise<SessionUser | null> {
   if (!token || token.length > 100) return null;
   const rows = await db()`
-    select u.id, u.phone, u.display_name
+    select u.id, u.display_name, u.is_admin
     from sessions s join users u on u.id = s.user_id
-    where s.token_hash = ${await sha256(token)} and s.expires_at > now()
+    where s.token_hash = ${await sha256(token)} and s.expires_at > now() and u.blocked_at is null
   `;
   const u = rows[0];
-  return u ? { id: u.id, phone: u.phone, displayName: u.display_name } : null;
+  return u ? { id: u.id, displayName: u.display_name, isAdmin: u.is_admin } : null;
+}
+
+/** Utilisateur de la requête (routes d'API). */
+export function getUser(request: Request): Promise<SessionUser | null> {
+  return userFromToken(readCookie(request, SESSION_COOKIE));
+}
+
+/** Utilisateur courant (pages serveur), lu dans les cookies de Next.js. */
+export async function currentUser(): Promise<SessionUser | null> {
+  const store = await cookies();
+  return userFromToken(store.get(SESSION_COOKIE)?.value);
 }
 
 export async function requireUser(request: Request): Promise<SessionUser> {
@@ -99,9 +114,15 @@ export async function requireUser(request: Request): Promise<SessionUser> {
   return user;
 }
 
-/** Comme requireUser, mais exige aussi un prénom (fin de l'inscription). */
+/** Comme requireUser, mais exige aussi un prénom. */
 export async function requireMember(request: Request): Promise<SessionUser & { displayName: string }> {
   const user = await requireUser(request);
   if (!user.displayName) throw new HttpError(403, 'needs_name', "Choisis d'abord ton prénom.");
   return user as SessionUser & { displayName: string };
+}
+
+export async function requireAdmin(request: Request): Promise<SessionUser> {
+  const user = await requireUser(request);
+  if (!user.isAdmin) throw new HttpError(403, 'not_admin', "Accès réservé à l'administration.");
+  return user;
 }

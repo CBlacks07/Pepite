@@ -3,7 +3,7 @@ export type ContribStatus = 'due' | 'sent' | 'paid';
 export type CircleStatus = 'forming' | 'active' | 'completed';
 export type Method = 'mobile_money' | 'bank_transfer' | 'cash';
 
-export type User = { id: string; phone: string; displayName: string | null };
+export type User = { id: string; displayName: string | null; isAdmin: boolean };
 
 export type HomeData = {
   user: { id: string; displayName: string };
@@ -80,14 +80,23 @@ export type TicketsData = {
   drawOn: string;
   inPlay: number;
   max: number;
-  tickets: { number: number; source: 'on_time' | 'loyalty' | 'invite'; detail: string | null; createdAt: string }[];
+  tickets: { number: number; source: "on_time" | "loyalty" | "invite" | "free_entry"; detail: string | null; createdAt: string }[];
   nextDue: { circle: string; dueOn: string } | null;
+  sponsor: string | null;
+  prizes: { label: string; value: number; quantity: number }[];
+  lastDraw: {
+    drawOn: string;
+    ticketsCount: number | null;
+    winners: number;
+    sponsor: string | null;
+    myWins: { number: number; label: string; value: number; delivered: boolean }[];
+  } | null;
 };
 
 export type MonthState = 'ontime' | 'late' | 'none' | 'current' | 'future';
 
 export type ProfileData = {
-  user: { id: string; displayName: string; phone: string };
+  user: { id: string; displayName: string };
   memberSince: string;
   score: number | null;
   parts: { punctuality: number; seniority: number; completed: number };
