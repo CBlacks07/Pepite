@@ -19,6 +19,10 @@ export default function Confidentialite() {
         </li>
         <li>Vos cercles, vos versements déclarés (moyen de paiement, référence, dates) et leurs validations.</li>
         <li>Les rappels envoyés et reçus, vos tickets et vos éventuels gains au Tirage du dimanche.</li>
+        <li>
+          Une empreinte de votre adresse IP (pas l'adresse elle-même) lors d'une inscription ou d'un code de secours
+          erroné, pour limiter les abus. Elle est effacée au bout de deux jours.
+        </li>
       </ul>
       <p>Pour l'instant, Pépite ne demande ni numéro de téléphone, ni adresse, ni pièce d'identité.</p>
 
