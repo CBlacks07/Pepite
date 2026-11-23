@@ -7,6 +7,7 @@ import { useState, type FormEvent, type ReactNode } from 'react';
 
 import { api } from '@/lib/api';
 import { fcfa } from '@/lib/format';
+import { DRAW, TEXT, maxTicketsText } from '@/lib/rules';
 
 import { CircleCheck, Gift, Plus, RotateCw, ShieldAlert, Ticket, UserCheck, UserX, X } from '../icons';
 import { Sheet } from '../Sheet';
@@ -73,7 +74,7 @@ function ConfirmWithNote({
       <Sheet open={open} onClose={() => setOpen(false)} label={title}>
         <form onSubmit={submit}>
           <h2 className="sheet-h">{title}</h2>
-          <p className="sub" style={{ margin: 0 }}>
+          <p className="sub m-0">
             {text}
           </p>
           <label className="fl" htmlFor="admin-note">
@@ -83,12 +84,12 @@ function ConfirmWithNote({
             id="admin-note"
             className="input"
             rows={3}
-            maxLength={300}
+            maxLength={TEXT.adminNoteMax}
             value={note}
             onChange={(e) => setNote(e.target.value)}
             required
           />
-          <button className={`btn${danger ? ' danger' : ''}`} disabled={busy || note.trim().length < 3}>
+          <button className={`btn${danger ? ' danger' : ''}`} disabled={busy || note.trim().length < TEXT.adminNoteMin}>
             {busy ? <Spinner /> : null}
             {confirmLabel}
           </button>
@@ -148,7 +149,7 @@ export function FreeTicketButton({ userId, name }: { userId: string; name: strin
     <div>
       <ConfirmWithNote
         title="Ticket de participation gratuite"
-        text={`Ajoute un ticket à ${name} pour le prochain tirage, sans versement (article 5 du règlement). 4 tickets maximum par tirage.`}
+        text={`Ajoute un ticket à ${name} pour le prochain tirage, sans versement (article 5 du règlement). ${maxTicketsText}.`}
         noteLabel="Demande reçue par (message, appel…)"
         confirmLabel="Ajouter le ticket"
         trigger={(open) => (
@@ -180,7 +181,7 @@ export function ResolveButtons({
   const { run, error } = useAction();
   const path = `/api/admin/contributions/${contributionId}/resolve`;
   return (
-    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+    <div className="actions-end">
       <ConfirmWithNote
         title="Valider ce versement"
         text={`Tu confirmes que ${member} a bien remis ${fcfa(amount)} à ${beneficiary}, à la place de ${beneficiary}. Le versement compte alors dans le bocal.`}
@@ -202,7 +203,7 @@ export function ResolveButtons({
           confirmLabel="Refuser le reçu"
           danger
           trigger={(open) => (
-            <button type="button" className="linkbtn" style={{ color: 'var(--late)' }} onClick={open}>
+            <button type="button" className="linkbtn text-danger" onClick={open}>
               <ShieldAlert strokeWidth={1.9} aria-hidden />
               Refuser
             </button>
@@ -221,8 +222,7 @@ export function DrawSponsorForm({ drawOn, sponsorName, sponsorContact }: { drawO
   const [contact, setContact] = useState(sponsorContact ?? '');
   return (
     <form
-      className="form-grid"
-      style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr) auto' }}
+      className="form-grid three"
       onSubmit={(e) => {
         e.preventDefault();
         run('/api/admin/draws', { drawOn, sponsorName: name, sponsorContact: contact }, 'Partenaire enregistré.');
@@ -232,13 +232,13 @@ export function DrawSponsorForm({ drawOn, sponsorName, sponsorContact }: { drawO
         <label className="fl" htmlFor="sp-name">
           Partenaire de la semaine
         </label>
-        <input id="sp-name" className="input" maxLength={80} value={name} onChange={(e) => setName(e.target.value)} placeholder="Nom du partenaire" />
+        <input id="sp-name" className="input" maxLength={DRAW.sponsorNameMax} value={name} onChange={(e) => setName(e.target.value)} placeholder="Nom du partenaire" />
       </div>
       <div>
         <label className="fl" htmlFor="sp-contact">
           Contact (interne)
         </label>
-        <input id="sp-contact" className="input" maxLength={120} value={contact} onChange={(e) => setContact(e.target.value)} placeholder="Personne, téléphone" />
+        <input id="sp-contact" className="input" maxLength={DRAW.sponsorContactMax} value={contact} onChange={(e) => setContact(e.target.value)} placeholder="Personne, téléphone" />
       </div>
       <button className="btn" disabled={busy}>
         {busy ? <Spinner /> : null}
@@ -275,7 +275,7 @@ export function AddPrizeForm({ drawOn }: { drawOn: string }) {
         <label className="fl" htmlFor="pz-label">
           Lot
         </label>
-        <input id="pz-label" className="input" maxLength={80} value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Crédit téléphone" required />
+        <input id="pz-label" className="input" maxLength={DRAW.prizeLabelMax} value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Crédit téléphone" required />
       </div>
       <div>
         <label className="fl" htmlFor="pz-value">
@@ -304,8 +304,7 @@ export function DeletePrizeButton({ prizeId }: { prizeId: string }) {
     <>
       <button
         type="button"
-        className="linkbtn"
-        style={{ color: 'var(--late)' }}
+        className="linkbtn text-danger"
         disabled={busy}
         onClick={() => run(`/api/admin/prizes/${prizeId}`, undefined, 'Lot retiré.', 'DELETE')}
         aria-label="Retirer ce lot"

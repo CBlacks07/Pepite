@@ -3,25 +3,20 @@ import localFont from 'next/font/local';
 import type { ReactNode } from 'react';
 
 import { Providers } from '@/components/Providers';
+import { THEME } from '@/lib/theme';
 
 import './globals.css';
 
 // Polices hébergées par l'appli (next/font) : rien n'est chargé depuis Google.
 const body = localFont({
-  src: [
-    { path: './fonts/Figtree_400Regular.ttf', weight: '400' },
-    { path: './fonts/Figtree_500Medium.ttf', weight: '500' },
-    { path: './fonts/Figtree_600SemiBold.ttf', weight: '600' },
-    { path: './fonts/Figtree_700Bold.ttf', weight: '700' },
-  ],
+  src: './fonts/IBMPlexSans.woff2',
+  weight: '400 700',
   variable: '--font-body',
   display: 'swap',
 });
 const display = localFont({
-  src: [
-    { path: './fonts/BricolageGrotesque_700Bold.ttf', weight: '700' },
-    { path: './fonts/BricolageGrotesque_800ExtraBold.ttf', weight: '800' },
-  ],
+  src: './fonts/Newsreader.woff2',
+  weight: '400 700',
   variable: '--font-display',
   display: 'swap',
 });
@@ -39,8 +34,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F4F7F3' },
-    { media: '(prefers-color-scheme: dark)', color: '#101B19' },
+    { media: '(prefers-color-scheme: light)', color: THEME.light.screen },
+    { media: '(prefers-color-scheme: dark)', color: THEME.dark.screen },
   ],
 };
 

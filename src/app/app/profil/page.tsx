@@ -2,7 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 
 import { BadgeCheck, CalendarCheck, Check, Copy, KeyRound, Lock, LogOut, UserPlus } from '@/components/icons';
 import { useToast } from '@/components/Toast';
@@ -10,6 +10,13 @@ import { ErrorNotice, FormError, PageSkeleton, Spinner } from '@/components/ui';
 import { api } from '@/lib/api';
 import { fcfa, initial, monthOf } from '@/lib/format';
 import { useProfile } from '@/lib/queries';
+import { SCORE_WEIGHTS } from '@/lib/rules';
+
+const SCORE_PARTS = [
+  ['punctuality', 'Ponctualité', 's1'],
+  ['seniority', 'Ancienneté', 's2'],
+  ['completed', 'Cercles terminés', 's3'],
+] as const;
 
 const MONTHS = 'JFMAMJJASOND'.split('');
 const MONTH_NAMES = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
@@ -79,7 +86,7 @@ export default function Profil() {
       <div className="page-head">
         <div className="hello">
           <div className="av big">{initial(d.user.displayName)}</div>
-          <div style={{ minWidth: 0 }}>
+          <div className="min-0">
             <h1 className="h-app">{d.user.displayName}</h1>
             <div className="sub">Membre depuis {monthOf(d.memberSince)}</div>
           </div>
@@ -141,7 +148,7 @@ export default function Profil() {
             </div>
           </div>
 
-          <div className="stats" style={{ marginTop: 0 }}>
+          <div className="stats mt-0">
             <div className="stat">
               <CalendarCheck strokeWidth={1.9} aria-hidden />
               <b className="num">{d.stats.streak}</b>
@@ -160,7 +167,7 @@ export default function Profil() {
           </div>
 
           <h2 className="section-h">Ce que ton score débloquera</h2>
-          <ul className="unlock card" style={{ paddingBlock: 4 }}>
+          <ul className="unlock card py-4">
             {UNLOCKS.map((u) => {
               const ok = score !== null && score >= u.at;
               return (
@@ -197,14 +204,14 @@ export default function Profil() {
             ))}
             <div className="legend">
               <span>
-                <i style={{ background: 'var(--brand)' }} />À l'heure
+                <i className="ontime" />À l'heure
               </span>
               <span>
-                <i style={{ background: 'var(--late)' }} />
+                <i className="late" />
                 En retard
               </span>
               <span>
-                <i style={{ boxShadow: 'inset 0 0 0 2px var(--brand)' }} />
+                <i className="current" />
                 Mois en cours
               </span>
             </div>
@@ -212,16 +219,18 @@ export default function Profil() {
 
           <h2 className="section-h">Comment il est calculé</h2>
           <div className="split" aria-hidden>
-            <span className="s1" style={{ flex: 70 }} />
-            <span className="s2" style={{ flex: 20 }} />
-            <span className="s3" style={{ flex: 10 }} />
+            {SCORE_PARTS.map(([key, , cls]) => (
+              <span key={key} className={cls} style={{ '--w': SCORE_WEIGHTS[key] } as CSSProperties} />
+            ))}
           </div>
           <div className="split-l">
-            <span>Ponctualité 70 %</span>
-            <span>Ancienneté 20 %</span>
-            <span>Cercles terminés 10 %</span>
+            {SCORE_PARTS.map(([key, label]) => (
+              <span key={key}>
+                {label} {SCORE_WEIGHTS[key]} %
+              </span>
+            ))}
           </div>
-          <p className="sub" style={{ margin: 0 }}>
+          <p className="sub m-0">
             {d.stats.payments
               ? `${d.stats.onTime} versement${d.stats.onTime > 1 ? 's' : ''} à l'heure sur ${d.stats.payments}.`
               : 'Aucun versement compté pour le moment.'}
@@ -229,7 +238,7 @@ export default function Profil() {
 
           <h2 className="section-h">Code de secours</h2>
           <div className="card">
-            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+            <div className="hstack">
               <span className="itile">
                 <KeyRound strokeWidth={1.9} aria-hidden />
               </span>
@@ -244,7 +253,7 @@ export default function Profil() {
             {code && (
               <>
                 <div className="recovery-code">{code}</div>
-                <p className="sub center" style={{ margin: 0 }}>
+                <p className="sub center m-0">
                   Note-le maintenant : il ne sera plus affiché.
                 </p>
               </>

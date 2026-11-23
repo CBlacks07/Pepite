@@ -9,6 +9,7 @@ import { useToast } from '@/components/Toast';
 import { FormError, Spinner } from '@/components/ui';
 import { api } from '@/lib/api';
 import type { User } from '@/lib/types';
+import { TEXT } from '@/lib/rules';
 
 type Mode = 'new' | 'code';
 
@@ -62,7 +63,7 @@ export function Connexion({ next, initialMode, invited }: { next: string; initia
     return (
       <div className="card">
         <h2 className="sheet-h">Ton code de secours</h2>
-        <p className="sub" style={{ margin: 0 }}>
+        <p className="sub m-0">
           Note-le dans un endroit sûr. Il te permet de retrouver ton compte sur un autre téléphone, et il ne sera plus
           affiché ensuite. Tu pourras en générer un nouveau depuis ton profil.
         </p>
@@ -106,7 +107,7 @@ export function Connexion({ next, initialMode, invited }: { next: string; initia
       {mode === 'new' ? (
         <form onSubmit={signup}>
           <h2 className="sheet-h">{invited ? 'Crée ton compte pour rejoindre le cercle' : 'Créer mon compte'}</h2>
-          <p className="sub" style={{ margin: 0 }}>
+          <p className="sub m-0">
             Juste ton prénom : c'est ce que verront les membres de tes cercles.
           </p>
           <label className="fl" htmlFor="name">
@@ -116,25 +117,25 @@ export function Connexion({ next, initialMode, invited }: { next: string; initia
             id="name"
             className="input"
             autoComplete="given-name"
-            maxLength={40}
+            maxLength={TEXT.displayNameMax}
             placeholder="Akossiwa"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
           <FormError error={error} />
-          <button className="btn" style={{ marginTop: 16 }} disabled={busy || !name.trim()}>
+          <button className="btn mt-16" disabled={busy || !name.trim()}>
             {busy ? <Spinner /> : <UserPlus strokeWidth={1.9} aria-hidden />}
             <span>Créer mon compte</span>
           </button>
-          <p className="sub" style={{ margin: '14px 0 0' }}>
-            En continuant, tu acceptes les <a href="/conditions" style={{ color: 'var(--brand)', fontWeight: 600 }}>conditions d'utilisation</a>.
+          <p className="sub m-t14">
+            En continuant, tu acceptes les <a className="text-link" href="/conditions">conditions d'utilisation</a>.
           </p>
         </form>
       ) : (
         <form onSubmit={recover}>
           <h2 className="sheet-h">Me reconnecter</h2>
-          <p className="sub" style={{ margin: 0 }}>
+          <p className="sub m-0">
             Entre le code de secours affiché lors de ton inscription (8 lettres et chiffres).
           </p>
           <label className="fl" htmlFor="code">
@@ -152,12 +153,12 @@ export function Connexion({ next, initialMode, invited }: { next: string; initia
             required
           />
           <FormError error={error} />
-          <button className="btn" style={{ marginTop: 16 }} disabled={busy || code.replace(/[^A-Z0-9]/g, '').length !== 8}>
+          <button className="btn mt-16" disabled={busy || code.replace(/[^A-Z0-9]/g, '').length !== 8}>
             {busy ? <Spinner /> : <LogIn strokeWidth={1.9} aria-hidden />}
             <span>Me reconnecter</span>
           </button>
-          <p className="sub" style={{ margin: '14px 0 0', display: 'flex', gap: 6, alignItems: 'center' }}>
-            <KeyRound strokeWidth={1.9} aria-hidden style={{ width: 15, height: 15 }} />
+          <p className="sub m-t14 inline-icon">
+            <KeyRound className="icon-sm" strokeWidth={1.9} aria-hidden />
             Code perdu ? Demande à l'équipe Pépite de t'aider.
           </p>
         </form>

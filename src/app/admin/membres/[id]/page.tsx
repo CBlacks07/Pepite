@@ -42,7 +42,7 @@ export default async function AdminMember({ params }: { params: Promise<{ id: st
       </div>
 
       {u.blockedAt && (
-        <div className="notice error" style={{ marginBottom: 18 }}>
+        <div className="notice error mb-18">
           <span>
             Compte suspendu {relative(u.blockedAt)}
             {u.blockedReason ? ` : ${u.blockedReason}` : '.'}
@@ -69,7 +69,7 @@ export default async function AdminMember({ params }: { params: Promise<{ id: st
         </div>
       </div>
 
-      <div className="grid-2" style={{ marginTop: 8 }}>
+      <div className="grid-2 mt-8">
         <div className="col">
           <h2 className="section-h">Cercles</h2>
           <div className="table-wrap">
@@ -117,7 +117,7 @@ export default async function AdminMember({ params }: { params: Promise<{ id: st
           {u.tickets.length === 0 ? (
             <div className="card sub">Aucun ticket pour le prochain tirage.</div>
           ) : (
-            <div className="tickets" style={{ margin: 0 }}>
+            <div className="tickets m-0">
               {u.tickets.map((t) => (
                 <div key={t.number} className="ticket">
                   <span className="no num">N° {ticketNo(t.number)}</span>
@@ -134,7 +134,7 @@ export default async function AdminMember({ params }: { params: Promise<{ id: st
           {u.actions.length === 0 ? (
             <div className="card sub">Aucune action sur ce compte.</div>
           ) : (
-            <ul className="feed card" style={{ paddingBlock: 4 }}>
+            <ul className="feed card py-4">
               {u.actions.map((a, i) => (
                 <li key={i}>
                   <div>

@@ -1,4 +1,7 @@
 // Formats français, montants en francs CFA, dates à l'heure de Lomé (UTC).
+
+import { DRAW } from '@/lib/rules';
+
 const NB = ' ';
 const group = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
 
@@ -58,9 +61,9 @@ export function ticketNo(n: number): string {
   return `${s.slice(0, 2)}${NB}${s.slice(2)}`;
 }
 
-/** Temps restant avant le tirage : dimanche 20 h à Lomé (= 20 h UTC). */
+/** Temps restant avant le tirage du dimanche (Lomé = UTC). */
 export function countdown(drawOn: string, now = Date.now()): { short: string; long: string } {
-  const target = Date.parse(`${drawOn}T20:00:00Z`);
+  const target = Date.parse(`${drawOn}T${String(DRAW.hour).padStart(2, '0')}:00:00Z`);
   const ms = Math.max(0, target - now);
   const d = Math.floor(ms / 864e5);
   const h = Math.floor((ms % 864e5) / 36e5);

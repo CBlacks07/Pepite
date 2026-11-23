@@ -1,5 +1,7 @@
 import type { MetadataRoute } from 'next';
 
+import { THEME } from '@/lib/theme';
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: '/app',
@@ -11,8 +13,8 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#F4F7F3',
-    theme_color: '#0D5C4E',
+    background_color: THEME.light.screen,
+    theme_color: THEME.light.brand,
     categories: ['finance', 'lifestyle'],
     icons: [
       { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },

@@ -29,6 +29,7 @@ import { countdown, dateLong, dayOfMonth, fcfa, initial, num, per, relative } fr
 import { useNow } from '@/lib/hooks';
 import { useHome, useMarkRemindersRead } from '@/lib/queries';
 import type { HomeData } from '@/lib/types';
+import { drawTime } from '@/lib/rules';
 
 type CircleItem = HomeData['circles'][number];
 type FeedItem = HomeData['feed'][number];
@@ -162,7 +163,7 @@ export default function Accueil() {
       <div className="page-head">
         <div className="hello">
           <div className="av mobile-only">{initial(name)}</div>
-          <div style={{ minWidth: 0 }}>
+          <div className="min-0">
             <div className="sub">Bonjour</div>
             <h1 className="h-app">{name}</h1>
           </div>
@@ -217,7 +218,7 @@ export default function Accueil() {
         <span className="count num">{d.tickets.count}</span>
         <span className="txt">
           <b>{d.tickets.count > 1 ? 'tickets pour dimanche' : 'ticket pour dimanche'}</b>
-          <span className="sub">{now ? countdown(d.tickets.drawOn, now).short : 'Tirage dimanche à 20 h'}</span>
+          <span className="sub">{now ? countdown(d.tickets.drawOn, now).short : `Tirage dimanche à ${drawTime}`}</span>
         </span>
         <ChevronRight strokeWidth={1.9} aria-hidden />
       </A>
@@ -228,7 +229,7 @@ export default function Accueil() {
           <Users strokeWidth={1.9} aria-hidden />
           <b>Pas encore de cercle</b>
           <span className="sub">Crée le tien et invite tes proches, ou entre le code qu'on t'a donné.</span>
-          <div className="btn-row" style={{ width: '100%' }}>
+          <div className="btn-row w-full">
             <A href="/app/creer" className="btn">
               <CirclePlus strokeWidth={1.9} aria-hidden />
               Créer un cercle
@@ -263,7 +264,7 @@ export default function Accueil() {
               );
             })}
           </div>
-          <A href="/app/rejoindre" className="linkbtn mobile-only" style={{ marginTop: 6 }}>
+          <A href="/app/rejoindre" className="linkbtn mobile-only mt-6">
             <UserPlus strokeWidth={1.9} aria-hidden />
             Rejoindre un cercle avec un code
           </A>
@@ -272,11 +273,11 @@ export default function Accueil() {
       </div>
 
       <div className="col">
-      <A href="/app/tirage" className="tk desktop-only" style={{ marginTop: 0 }}>
+      <A href="/app/tirage" className="tk desktop-only mt-0">
         <span className="count num">{d.tickets.count}</span>
         <span className="txt">
           <b>{d.tickets.count > 1 ? 'tickets pour dimanche' : 'ticket pour dimanche'}</b>
-          <span className="sub">{now ? countdown(d.tickets.drawOn, now).short : 'Tirage dimanche à 20 h'}</span>
+          <span className="sub">{now ? countdown(d.tickets.drawOn, now).short : `Tirage dimanche à ${drawTime}`}</span>
         </span>
         <ChevronRight strokeWidth={1.9} aria-hidden />
       </A>
@@ -285,7 +286,7 @@ export default function Accueil() {
       {d.feed.length === 0 ? (
         <div className="card sub">Les versements, validations et arrivées dans tes cercles s'afficheront ici.</div>
       ) : (
-        <div className="card" style={{ paddingBlock: 4 }}>
+        <div className="card py-4">
           <ul className="feed">
             {d.feed.map((e, i) => {
               const line = feedLine(e);
@@ -309,7 +310,7 @@ export default function Accueil() {
 
       <Sheet open={!!bell} onClose={() => setBell(null)} label="Rappels">
         <h2 className="sheet-h">Rappels</h2>
-        <p className="sub" style={{ margin: '0 0 8px' }}>
+        <p className="sub m-b8">
           Envoyés en privé par les membres de tes cercles.
         </p>
         <ul className="feed">

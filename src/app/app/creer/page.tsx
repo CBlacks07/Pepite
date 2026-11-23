@@ -9,9 +9,7 @@ import { FormError, Spinner, Stepper, SwitchRow } from '@/components/ui';
 import { fcfa, per } from '@/lib/format';
 import { useCreateCircle } from '@/lib/queries';
 import type { Frequency } from '@/lib/types';
-
-const MIN = 1_000;
-const MAX = 1_000_000;
+import { CIRCLE } from '@/lib/rules';
 
 // Pas du montant : 1 000 jusqu'à 10 000, puis 5 000 jusqu'à 100 000, puis 25 000.
 function step(v: number, dir: 1 | -1): number {
@@ -22,9 +20,9 @@ function step(v: number, dir: 1 | -1): number {
 export default function Creer() {
   const router = useRouter();
   const [name, setName] = useState('');
-  const [amount, setAmount] = useState(25_000);
+  const [amount, setAmount] = useState<number>(CIRCLE.amountDefault);
   const [frequency, setFrequency] = useState<Frequency>('monthly');
-  const [size, setSize] = useState(8);
+  const [size, setSize] = useState<number>(CIRCLE.sizeDefault);
   const [newLast, setNewLast] = useState(true);
   const [deposit, setDeposit] = useState(false);
   const create = useCreateCircle();
@@ -50,7 +48,7 @@ export default function Creer() {
       <div className="page-head">
         <div>
           <h1 className="h-app">Nouveau cercle</h1>
-          <p className="sub" style={{ margin: '4px 0 0' }}>
+          <p className="sub m-t4">
             Tu inviteras ensuite les membres avec un code. L'ordre des tours est tiré quand tout le monde est là.
           </p>
         </div>
@@ -59,13 +57,13 @@ export default function Creer() {
       <div className="grid-2">
         <div className="col">
           <div className="field">
-            <label className="fl" htmlFor="f-name" style={{ marginTop: 0 }}>
+            <label className="fl mt-0" htmlFor="f-name">
               Nom du cercle
             </label>
             <input
               id="f-name"
               className="input"
-              maxLength={40}
+              maxLength={CIRCLE.nameMax}
               autoComplete="off"
               placeholder="Les voisins de Bè"
               value={name}
@@ -74,39 +72,39 @@ export default function Creer() {
             />
           </div>
 
-          <div className="grid-2 even" style={{ gap: 16 }}>
+          <div className="grid-2 even gap-16">
             <div className="field">
-              <span className="fl" style={{ marginTop: 0 }}>
+              <span className="fl mt-0">
                 Montant par personne
               </span>
               <Stepper
                 label="Montant par personne"
                 value={amount}
                 display={fcfa(amount)}
-                onMinus={() => setAmount((v) => Math.max(MIN, step(v, -1)))}
-                onPlus={() => setAmount((v) => Math.min(MAX, step(v, 1)))}
-                minDisabled={amount <= MIN}
-                maxDisabled={amount >= MAX}
+                onMinus={() => setAmount((v) => Math.max(CIRCLE.amountMin, step(v, -1)))}
+                onPlus={() => setAmount((v) => Math.min(CIRCLE.amountMax, step(v, 1)))}
+                minDisabled={amount <= CIRCLE.amountMin}
+                maxDisabled={amount >= CIRCLE.amountMax}
               />
             </div>
             <div className="field">
-              <span className="fl" style={{ marginTop: 0 }}>
+              <span className="fl mt-0">
                 Nombre de membres
               </span>
               <Stepper
                 label="Nombre de membres"
                 value={size}
                 display={size}
-                onMinus={() => setSize((v) => Math.max(3, v - 1))}
-                onPlus={() => setSize((v) => Math.min(20, v + 1))}
-                minDisabled={size <= 3}
-                maxDisabled={size >= 20}
+                onMinus={() => setSize((v) => Math.max(CIRCLE.sizeMin, v - 1))}
+                onPlus={() => setSize((v) => Math.min(CIRCLE.sizeMax, v + 1))}
+                minDisabled={size <= CIRCLE.sizeMin}
+                maxDisabled={size >= CIRCLE.sizeMax}
               />
             </div>
           </div>
 
           <div className="field">
-            <span className="fl" style={{ marginTop: 0 }}>
+            <span className="fl mt-0">
               Rythme
             </span>
             <div className="seg two" role="group" aria-label="Rythme">
@@ -122,7 +120,7 @@ export default function Creer() {
           </div>
 
           <div className="field">
-            <span className="fl" style={{ marginTop: 0 }}>
+            <span className="fl mt-0">
               Règles
             </span>
             <SwitchRow
@@ -145,7 +143,7 @@ export default function Creer() {
         </div>
 
         <div className="col sticky">
-          <div className="summary" style={{ marginTop: 0 }}>
+          <div className="summary mt-0">
             <div className="t">
               <HandCoins strokeWidth={1.9} aria-hidden />
               {fcfa(amount)} {per(frequency)}, {size} membres

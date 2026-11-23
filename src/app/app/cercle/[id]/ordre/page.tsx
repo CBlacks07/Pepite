@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 
 import { A } from '@/components/A';
 import { ChevronLeft, Dices, RotateCw, ShieldCheck, Users } from '@/components/icons';
@@ -78,7 +78,7 @@ export default function Ordre() {
       <div className="grid-2">
         <div className="col sticky">
           <div className="card">
-            <div className="online" style={{ margin: 0, padding: 0 }}>
+            <div className="online m-0 p-0">
               <div className="stack">
                 {wheelMembers.slice(0, 8).map((m) => (
                   <div key={m.id} className="av">
@@ -86,7 +86,7 @@ export default function Ordre() {
                   </div>
                 ))}
               </div>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span className="inline-icon">
                 <Users strokeWidth={1.9} aria-hidden />
                 <span>
                   <b>
@@ -106,7 +106,7 @@ export default function Ordre() {
               }}
             />
             {drawn && !showResult && (
-              <p className="sub center" style={{ margin: 0 }}>
+              <p className="sub center m-0">
                 <Spinner /> Tirage en cours…
               </p>
             )}
@@ -117,33 +117,31 @@ export default function Ordre() {
           {!drawn && (
             <>
               <h2 className="section-h">Comment ça se passe</h2>
-              <p className="sub" style={{ margin: 0, fontSize: 15 }}>
+              <p className="sub m-0 text-md">
                 La roue désigne qui reçoit la cagnotte en premier, puis l'ordre complet s'affiche pour tout le monde. Le
                 résultat est tiré par le serveur avec un code que chacun peut vérifier : personne ne choisit sa place.
               </p>
               {c.isOrganizer && full ? (
                 <div className="card">
-                  <label className="fl" htmlFor="starts" style={{ marginTop: 0 }}>
+                  <label className="fl mt-0" htmlFor="starts">
                     Date limite du premier versement
                   </label>
                   <input
                     id="starts"
                     type="date"
-                    className="input"
-                    style={{ maxWidth: 240 }}
+                    className="input narrow"
                     min={todayLome()}
                     value={startsOn}
                     onChange={(e) => setStartsOn(e.target.value)}
                   />
-                  <p className="sub" style={{ margin: '6px 0 0' }}>
+                  <p className="sub m-t6">
                     Les tours suivants tombent {c.frequency === 'weekly' ? 'chaque semaine' : 'chaque mois'} à partir
                     de cette date.
                   </p>
                   <FormError error={draw.error} />
                   <button
                     type="button"
-                    className="btn"
-                    style={{ marginTop: 14 }}
+                    className="btn mt-14"
                     disabled={draw.isPending || !startsOn}
                     onClick={() => draw.mutate(startsOn)}
                   >
@@ -166,7 +164,7 @@ export default function Ordre() {
 
           {drawn && showResult && firstRound && (
             <>
-              <div className="first" style={{ margin: 0 }}>
+              <div className="first m-0">
                 <div className="eyebrow">Résultat du tirage</div>
                 <div className="h-app">
                   {firstRound.beneficiaryId === d.me ? 'Tu commences' : `${nameOf(firstRound.beneficiaryId)} commence`}
@@ -183,7 +181,7 @@ export default function Ordre() {
                   <li
                     key={r.id}
                     className={r.beneficiaryId === d.me ? 'me' : ''}
-                    style={{ animationDelay: `${i * 90}ms` }}
+                    style={{ '--i': i } as CSSProperties}
                   >
                     <span className="pos num">{r.number}</span>
                     <span className="nm">{nameOf(r.beneficiaryId)}</span>
@@ -191,7 +189,7 @@ export default function Ordre() {
                   </li>
                 ))}
               </ol>
-              <div className="card verify" style={{ marginTop: 0 }}>
+              <div className="card verify mt-0">
                 <span className="itile">
                   <ShieldCheck strokeWidth={1.9} aria-hidden />
                 </span>

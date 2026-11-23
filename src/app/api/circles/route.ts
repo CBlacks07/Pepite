@@ -1,15 +1,16 @@
 import { CODE_ALPHABET, randomString, requireMember } from '@/server/auth';
 import { db } from '@/server/db';
 import { json, readJson, route, v } from '@/server/http';
+import { CIRCLE } from '@/lib/rules';
 
 // Créer un cercle. L'organisateur en devient le premier membre.
 export const POST = route(async (request) => {
   const user = await requireMember(request);
   const body = await readJson(request);
-  const name = v.text(body.name, 'Nom du cercle', { max: 40 });
-  const amount = v.int(body.amount, 'Montant', 500, 10_000_000);
+  const name = v.text(body.name, 'Nom du cercle', { max: CIRCLE.nameMax });
+  const amount = v.int(body.amount, 'Montant', CIRCLE.amountMin, CIRCLE.amountMax);
   const frequency = v.oneOf(body.frequency, 'Rythme', ['weekly', 'monthly'] as const);
-  const size = v.int(body.size, 'Nombre de membres', 3, 20);
+  const size = v.int(body.size, 'Nombre de membres', CIRCLE.sizeMin, CIRCLE.sizeMax);
   const newLast = v.bool(body.newMembersLast, 'Nouveaux en dernier');
   const deposit = v.bool(body.depositRequired, 'Caution');
 

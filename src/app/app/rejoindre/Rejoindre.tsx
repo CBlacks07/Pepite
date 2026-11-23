@@ -8,6 +8,7 @@ import { ChevronLeft, UserPlus } from '@/components/icons';
 import { useToast } from '@/components/Toast';
 import { FormError, Spinner } from '@/components/ui';
 import { useJoinCircle } from '@/lib/queries';
+import { CIRCLE } from '@/lib/rules';
 
 export function Rejoindre({ initialCode }: { initialCode: string }) {
   const router = useRouter();
@@ -34,22 +35,21 @@ export function Rejoindre({ initialCode }: { initialCode: string }) {
       <div className="page-head">
         <div>
           <h1 className="h-app">Rejoindre un cercle</h1>
-          <p className="sub" style={{ margin: '4px 0 0' }}>
+          <p className="sub m-t4">
             Entre le code d'invitation que l'organisateur t'a envoyé.
           </p>
         </div>
       </div>
       <form className="card" onSubmit={submit}>
-        <label className="fl" htmlFor="code" style={{ marginTop: 0 }}>
+        <label className="fl mt-0" htmlFor="code">
           Code d'invitation
         </label>
         <input
           id="code"
-          className="input big"
-          style={{ maxWidth: 260 }}
+          className="input big narrow"
           autoCapitalize="characters"
           autoComplete="off"
-          maxLength={6}
+          maxLength={CIRCLE.inviteCodeLength}
           placeholder="VX8K2M"
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
@@ -57,7 +57,7 @@ export function Rejoindre({ initialCode }: { initialCode: string }) {
         />
         <FormError error={join.error} />
         <div>
-          <button className="btn" style={{ marginTop: 16 }} disabled={join.isPending || code.length !== 6}>
+          <button className="btn mt-16" disabled={join.isPending || code.length !== 6}>
             {join.isPending ? <Spinner /> : <UserPlus strokeWidth={1.9} aria-hidden />}
             <span>Rejoindre</span>
           </button>

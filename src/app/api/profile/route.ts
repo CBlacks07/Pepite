@@ -1,10 +1,11 @@
 import { requireMember } from '@/server/auth';
 import { db } from '@/server/db';
 import { json, route } from '@/server/http';
+import { SCORE_WEIGHTS, TIMEZONE } from '@/lib/rules';
 
 type Month = 'ontime' | 'late' | 'none' | 'current' | 'future';
 
-// Score de fiabilité : ponctualité 70 %, ancienneté 20 %, cercles terminés 10 %.
+// Score de fiabilité : ponctualité, ancienneté et cercles terminés, pondérés par SCORE_WEIGHTS.
 export const GET = route(async (request) => {
   const user = await requireMember(request);
   const sql = db();
@@ -21,7 +22,7 @@ export const GET = route(async (request) => {
     // La part du bénéficiaire, comptée d'office, est exclue.
     sql`
       select r.due_on::text as due_on,
-             (k.status = 'paid' and (k.sent_at at time zone 'Africa/Lome')::date <= r.due_on) as on_time
+             (k.status = 'paid' and (k.sent_at at time zone ${TIMEZONE})::date <= r.due_on) as on_time
       from contributions k join rounds r on r.id = k.round_id
       where k.member_id = ${me} and r.beneficiary_id <> ${me}
         and (k.status = 'paid' or r.due_on < lome_today())
@@ -49,7 +50,11 @@ export const GET = route(async (request) => {
     completed: Math.min(counts.completed, 5) / 5,
   };
   const score = total
-    ? Math.round(100 * (0.7 * parts.punctuality + 0.2 * parts.seniority + 0.1 * parts.completed))
+    ? Math.round(
+        SCORE_WEIGHTS.punctuality * parts.punctuality +
+          SCORE_WEIGHTS.seniority * parts.seniority +
+          SCORE_WEIGHTS.completed * parts.completed,
+      )
     : null;
 
   // Grille mois par mois.

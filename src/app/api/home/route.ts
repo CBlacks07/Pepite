@@ -1,6 +1,7 @@
 import { requireMember } from '@/server/auth';
 import { db } from '@/server/db';
 import { json, route } from '@/server/http';
+import { DRAW } from '@/lib/rules';
 
 // Tout ce que montre l'accueil, en un seul appel.
 export const GET = route(async (request) => {
@@ -76,7 +77,7 @@ export const GET = route(async (request) => {
     nextTurn: nextTurn
       ? { circleId: nextTurn.id, circleName: nextTurn.name, pot: nextTurn.pot, dueOn: nextTurn.due_on }
       : null,
-    tickets: { count: tickets.count, max: 4, drawOn: tickets.draw_on },
+    tickets: { count: tickets.count, max: DRAW.maxTicketsPerPerson, drawOn: tickets.draw_on },
     circles: circles.map((c) => ({
       id: c.id,
       name: c.name,

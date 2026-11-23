@@ -1,6 +1,7 @@
 import { requireMember } from '@/server/auth';
 import { db } from '@/server/db';
 import { HttpError, json, route, v } from '@/server/http';
+import { REMINDER_COOLDOWN_HOURS } from '@/lib/rules';
 
 // Détail d'un cercle, visible seulement par ses membres.
 export const GET = route(async (request, params) => {
@@ -54,7 +55,7 @@ export const GET = route(async (request, params) => {
     `,
     sql`
       select distinct m.to_user from reminders m
-      where m.from_user = ${user.id} and m.created_at > now() - interval '24 hours'
+      where m.from_user = ${user.id} and m.created_at > now() - make_interval(hours => ${REMINDER_COOLDOWN_HOURS})
         and m.round_id = (
           select r.id from rounds r where r.circle_id = ${id}
           order by (r.due_on < lome_today()), case when r.due_on >= lome_today() then r.number else -r.number end

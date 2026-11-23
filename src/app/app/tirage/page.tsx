@@ -6,6 +6,7 @@ import { countdown, dateLong, fcfa, num, ticketNo } from '@/lib/format';
 import { useNow } from '@/lib/hooks';
 import { useTickets } from '@/lib/queries';
 import type { TicketsData } from '@/lib/types';
+import { drawTime, maxTicketsText } from '@/lib/rules';
 
 const SOURCE: Record<TicketsData['tickets'][number]['source'], string> = {
   on_time: "Versement à l'heure",
@@ -36,7 +37,7 @@ export default function Tirage() {
       <div className="page-head">
         <div>
           <div className="eyebrow">Tirage du dimanche</div>
-          <h1 className="h-app" style={{ marginTop: 4 }}>
+          <h1 className="h-app mt-4">
             Tes chances cette semaine
           </h1>
         </div>
@@ -44,12 +45,12 @@ export default function Tirage() {
 
       <div className="grid-2">
         <div className="col">
-          <div className="card cd" style={{ marginTop: 0 }}>
+          <div className="card cd mt-0">
             <span className="itile gold">
               <Timer strokeWidth={1.9} aria-hidden />
             </span>
             <div>
-              <div className="sub">Prochain tirage : {dateLong(d.drawOn)}, 20 h (heure de Lomé)</div>
+              <div className="sub">Prochain tirage : {dateLong(d.drawOn)}, {drawTime} (heure de Lomé)</div>
               <div className="count-big num">{now ? countdown(d.drawOn, now).long : '…'}</div>
             </div>
           </div>
@@ -57,7 +58,7 @@ export default function Tirage() {
           <h2 className="section-h">
             Tes tickets : {d.tickets.length} sur {d.max}
           </h2>
-          <div className="tickets" style={{ margin: 0 }}>
+          <div className="tickets m-0">
             {d.tickets.map((t) => (
               <div key={t.number} className="ticket">
                 <span className="no num">N° {ticketNo(t.number)}</span>
@@ -86,7 +87,7 @@ export default function Tirage() {
         <div className="col">
           <h2 className="section-h">Les lots de la semaine</h2>
           {d.prizes.length === 0 ? (
-            <div className="card" style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+            <div className="card hstack">
               <span className="itile sm gold">
                 <Gift strokeWidth={1.9} aria-hidden />
               </span>
@@ -99,7 +100,7 @@ export default function Tirage() {
               </div>
             </div>
           ) : (
-            <div className="card" style={{ paddingBlock: '6px 14px' }}>
+            <div className="card py-list">
               {d.prizes.map((p, i) => (
                 <div key={i} className="pr">
                   <span className="itile sm gold">
@@ -125,7 +126,7 @@ export default function Tirage() {
               <h2 className="section-h">Dernier tirage, {dateLong(d.lastDraw.drawOn)}</h2>
               {d.lastDraw.myWins.length > 0 ? (
                 d.lastDraw.myWins.map((w) => (
-                  <div key={w.number} className="res win" style={{ marginTop: 0 }}>
+                  <div key={w.number} className="res win mt-0">
                     <span className="itile gold">
                       <PartyPopper strokeWidth={1.9} aria-hidden />
                     </span>
@@ -140,7 +141,7 @@ export default function Tirage() {
                   </div>
                 ))
               ) : (
-                <div className="res" style={{ marginTop: 0 }}>
+                <div className="res mt-0">
                   <span className="itile">
                     <Award strokeWidth={1.9} aria-hidden />
                   </span>
@@ -171,13 +172,13 @@ export default function Tirage() {
             </li>
             <li>
               <Ban strokeWidth={1.9} aria-hidden />
-              <span>4 tickets maximum par tirage. Les tickets ne s'achètent pas.</span>
+              <span>{maxTicketsText}. Les tickets ne s'achètent pas.</span>
             </li>
             <li>
               <Info strokeWidth={1.9} aria-hidden />
               <span>
                 Participation gratuite possible sans versement :{' '}
-                <a href="/reglement" style={{ color: 'var(--brand)', fontWeight: 700 }}>
+                <a className="text-link" href="/reglement">
                   voir le règlement du jeu
                 </a>
                 .

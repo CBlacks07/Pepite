@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { AddPrizeForm, DeletePrizeButton, DeliveredButton, DrawSponsorForm, RunDrawButton } from '@/components/admin/actions';
 import { dateLong, fcfa, num, ticketNo } from '@/lib/format';
+import { drawTime, drawWhen } from '@/lib/rules';
 import { getDraws, requireAdminPage } from '@/server/admin';
 
 export const metadata: Metadata = { title: 'Tirage du dimanche' };
@@ -20,24 +21,23 @@ export default async function AdminDraws() {
     <div className="view wide">
       <div className="page-head">
         <div>
-          <div className="eyebrow">Administration</div>
           <h1 className="h-app">Tirage du dimanche</h1>
-          <p className="sub" style={{ margin: '4px 0 0', maxWidth: '70ch' }}>
+          <p className="sub page-intro">
             Les lots sont offerts par des partenaires, jamais pris sur les cagnottes. Le tirage se lance à partir du
-            dimanche 20 h, heure de Lomé.
+            {drawWhen}.
           </p>
         </div>
       </div>
 
       {toRun.length > 0 && (
         <>
-          <h2 className="section-h" style={{ marginTop: 0 }}>
+          <h2 className="section-h mt-0">
             À lancer maintenant
           </h2>
           <div className="col">
             {toRun.map((d) => (
-              <div key={d.drawOn} className="card" style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-                <div style={{ flex: 1, minWidth: 240 }}>
+              <div key={d.drawOn} className="card hstack center wrap gap-16">
+                <div className="grow min-240">
                   <b>Tirage du {dateLong(d.drawOn)}</b>
                   <div className="sub">
                     {num(d.ticketsCount)} tickets, {num(d.prizes.reduce((s, p) => s + p.quantity, 0))} lots
@@ -55,7 +55,7 @@ export default async function AdminDraws() {
         </>
       )}
 
-      <h2 className="section-h">Prochain tirage : {dateLong(data.nextDrawOn)}, 20 h</h2>
+      <h2 className="section-h">Prochain tirage : {dateLong(data.nextDrawOn)}, {drawTime}</h2>
       <div className="grid-2">
         <div className="col">
           <div className="card">
@@ -97,7 +97,7 @@ export default async function AdminDraws() {
               </tbody>
             </table>
           </div>
-          <p className="sub" style={{ margin: 0 }}>
+          <p className="sub m-0">
             {num(data.nextTickets)} tickets en jeu pour l'instant
             {totalPrizes ? `, ${num(totalPrizes)} lots, soit environ 1 chance sur ${num(Math.max(1, Math.round(data.nextTickets / totalPrizes)))} par ticket` : ''}.
           </p>
@@ -109,7 +109,7 @@ export default async function AdminDraws() {
         <div className="card sub">Aucun tirage effectué pour l'instant.</div>
       ) : (
         done.map((d) => (
-          <div key={d.drawOn} className="col" style={{ marginBottom: 22 }}>
+          <div key={d.drawOn} className="col mb-22">
             <div>
               <b>{dateLong(d.drawOn)}</b>
               <span className="sub">

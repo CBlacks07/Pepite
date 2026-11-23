@@ -2,6 +2,7 @@ import { isSunday, logAdmin } from '@/server/adminLog';
 import { requireAdmin } from '@/server/auth';
 import { db } from '@/server/db';
 import { HttpError, json, readJson, route, v } from '@/server/http';
+import { DRAW } from '@/lib/rules';
 
 // Ajouter un lot à un tirage pas encore effectué.
 export const POST = route(async (request, params) => {
@@ -9,9 +10,9 @@ export const POST = route(async (request, params) => {
   const drawOn = v.date(params.date, 'Date du tirage');
   if (!isSunday(drawOn)) throw new HttpError(400, 'not_sunday', 'Le tirage a lieu un dimanche.');
   const body = await readJson(request);
-  const label = v.text(body.label, 'Lot', { max: 80 });
-  const value = v.int(body.value, 'Valeur (F CFA)', 1, 100_000_000);
-  const quantity = v.int(body.quantity, 'Quantité', 1, 1000);
+  const label = v.text(body.label, 'Lot', { max: DRAW.prizeLabelMax });
+  const value = v.int(body.value, 'Valeur (F CFA)', 1, DRAW.prizeValueMax);
+  const quantity = v.int(body.quantity, 'Quantité', 1, DRAW.prizeQuantityMax);
 
   const sql = db();
   await sql`insert into draws (draw_on) values (${drawOn}) on conflict (draw_on) do nothing`;

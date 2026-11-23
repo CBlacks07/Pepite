@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import { fcfa, dateLong, num, relative } from '@/lib/format';
 import { ADMIN_ACTION } from '@/lib/labels';
+import { STALE_RECEIPT_DAYS } from '@/lib/rules';
 import { getStats, requireAdminPage } from '@/server/admin';
 
 function Kpi({ label, value, hint }: { label: string; value: string; hint?: string }) {
@@ -23,12 +24,11 @@ export default async function AdminStats() {
     <div className="view wide">
       <div className="page-head">
         <div>
-          <div className="eyebrow">Administration</div>
           <h1 className="h-app">Statistiques</h1>
         </div>
       </div>
 
-      <h2 className="section-h" style={{ marginTop: 0 }}>
+      <h2 className="section-h mt-0">
         Membres et cercles
       </h2>
       <div className="grid-4">
@@ -53,16 +53,16 @@ export default async function AdminStats() {
       <h2 className="section-h">À traiter</h2>
       <div className="grid-2 even">
         <Link href="/admin/litiges" className="card kpi">
-          <span className="label">Reçus non validés depuis plus de 3 jours</span>
+          <span className="label">Reçus non validés depuis plus de {STALE_RECEIPT_DAYS} jours</span>
           <span className="value">{num(s.staleSent)}</span>
-          <span className="hint" style={{ color: 'var(--brand)', fontWeight: 700 }}>
+          <span className="hint text-link">
             Voir les litiges
           </span>
         </Link>
         <Link href="/admin/litiges" className="card kpi">
           <span className="label">Versements en retard</span>
           <span className="value">{num(s.late)}</span>
-          <span className="hint" style={{ color: 'var(--brand)', fontWeight: 700 }}>
+          <span className="hint text-link">
             Voir les litiges
           </span>
         </Link>

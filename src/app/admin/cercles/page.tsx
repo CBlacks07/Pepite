@@ -18,7 +18,6 @@ export default async function AdminCircles({ searchParams }: { searchParams: Pro
     <div className="view wide">
       <div className="page-head">
         <div>
-          <div className="eyebrow">Administration</div>
           <h1 className="h-app">Cercles</h1>
         </div>
       </div>
@@ -29,7 +28,7 @@ export default async function AdminCircles({ searchParams }: { searchParams: Pro
           Chercher
         </button>
       </form>
-      <p className="sub" style={{ marginTop: 0 }}>
+      <p className="sub mt-0">
         {num(circles.length)} {circles.length > 1 ? 'cercles affichés' : 'cercle affiché'}
         {circles.length === 100 ? ' (les 100 plus récents)' : ''}.
       </p>

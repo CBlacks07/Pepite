@@ -5,6 +5,7 @@ import { notFound, redirect } from 'next/navigation';
 
 import { currentUser, type SessionUser } from './auth';
 import { db } from './db';
+import { DRAW, STALE_RECEIPT_DAYS, TIMEZONE } from '@/lib/rules';
 
 /** À appeler en tête de chaque page d'admin : 404 pour qui n'est pas admin. */
 export async function requireAdminPage(next = '/admin'): Promise<SessionUser> {
@@ -32,13 +33,13 @@ export async function getStats() {
         (select coalesce(sum(c.amount), 0) from contributions k join rounds r on r.id = k.round_id
            join circles c on c.id = r.circle_id
            where k.status = 'paid' and r.beneficiary_id <> k.member_id
-             and k.validated_at >= date_trunc('month', now() at time zone 'Africa/Lome') at time zone 'Africa/Lome')::bigint as validated_month,
+             and k.validated_at >= date_trunc('month', now() at time zone ${TIMEZONE}) at time zone ${TIMEZONE})::bigint as validated_month,
         (select count(*) from contributions k join rounds r on r.id = k.round_id
            where r.beneficiary_id <> k.member_id and (k.status = 'paid' or r.due_on < lome_today()))::int as counted,
         (select count(*) from contributions k join rounds r on r.id = k.round_id
            where r.beneficiary_id <> k.member_id and k.status = 'paid'
-             and (k.sent_at at time zone 'Africa/Lome')::date <= r.due_on)::int as on_time,
-        (select count(*) from contributions where status = 'sent' and sent_at < now() - interval '3 days')::int as stale_sent,
+             and (k.sent_at at time zone ${TIMEZONE})::date <= r.due_on)::int as on_time,
+        (select count(*) from contributions where status = 'sent' and sent_at < now() - make_interval(days => ${STALE_RECEIPT_DAYS}))::int as stale_sent,
         (select count(*) from contributions k join rounds r on r.id = k.round_id
            where k.status = 'due' and r.due_on < lome_today())::int as late,
         (select count(*) from draw_tickets where draw_on = next_draw_on())::int as tickets_next,
@@ -112,8 +113,8 @@ export async function getUserDetail(id: string) {
     `,
     sql`
       select
-        count(*) filter (where k.status = 'paid' and (k.sent_at at time zone 'Africa/Lome')::date <= r.due_on)::int as on_time,
-        count(*) filter (where k.status = 'paid' and (k.sent_at at time zone 'Africa/Lome')::date > r.due_on)::int as paid_late,
+        count(*) filter (where k.status = 'paid' and (k.sent_at at time zone ${TIMEZONE})::date <= r.due_on)::int as on_time,
+        count(*) filter (where k.status = 'paid' and (k.sent_at at time zone ${TIMEZONE})::date > r.due_on)::int as paid_late,
         count(*) filter (where k.status <> 'paid' and r.due_on < lome_today())::int as overdue,
         count(*) filter (where k.status = 'sent')::int as waiting
       from contributions k join rounds r on r.id = k.round_id
@@ -256,7 +257,7 @@ export async function listDisputes() {
     join circles c on c.id = r.circle_id
     join users m on m.id = k.member_id
     join users b on b.id = r.beneficiary_id
-    where (k.status = 'sent' and k.sent_at < now() - interval '3 days')
+    where (k.status = 'sent' and k.sent_at < now() - make_interval(days => ${STALE_RECEIPT_DAYS}))
        or (k.status = 'due' and r.due_on < lome_today())
     order by r.due_on, c.name
     limit 200
@@ -289,7 +290,7 @@ export async function getDraws() {
     sql`
       select d.draw_on::text as draw_on, d.sponsor_name, d.sponsor_contact, d.status, d.seed, d.tickets_count,
              d.drawn_at,
-             (now() >= (d.draw_on + time '20:00') at time zone 'Africa/Lome') as due,
+             (now() >= (d.draw_on + make_time(${DRAW.hour}, 0, 0)) at time zone ${TIMEZONE}) as due,
              (select count(*)::int from draw_tickets t where t.draw_on = d.draw_on) as tickets
       from draws d order by d.draw_on desc limit 12
     `,

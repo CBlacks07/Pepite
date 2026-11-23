@@ -69,8 +69,7 @@ export function InstallBanner() {
         {evt && (
           <button
             type="button"
-            className="linkbtn"
-            style={{ paddingLeft: 0 }}
+            className="linkbtn pl-0"
             onClick={async () => {
               await evt.prompt();
               await evt.userChoice;
@@ -82,7 +81,7 @@ export function InstallBanner() {
           </button>
         )}
       </div>
-      <button type="button" className="iconbtn" style={{ width: 34, height: 34 }} onClick={close} aria-label="Masquer">
+      <button type="button" className="iconbtn sm" onClick={close} aria-label="Masquer">
         <X strokeWidth={1.9} aria-hidden />
       </button>
     </div>

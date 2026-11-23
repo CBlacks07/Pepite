@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { LegalPage } from '@/components/LegalPage';
+import { DRAW, drawTime } from '@/lib/rules';
 
 export const metadata: Metadata = { title: 'Règlement du jeu' };
 
@@ -29,7 +30,7 @@ export default function Reglement() {
       <ul>
         <li>1 ticket pour chaque versement fait au plus tard à la date limite et validé par le bénéficiaire du tour.</li>
         <li>1 ticket quand une personne invitée rejoint son premier cercle (pour l'organisateur de ce cercle).</li>
-        <li>4 tickets au maximum par personne et par tirage.</li>
+        <li>{DRAW.maxTicketsPerPerson} tickets au maximum par personne et par tirage.</li>
         <li>
           Les tickets ne s'achètent pas, ne se cèdent pas et n'ont aucune valeur en argent. Un ticket vaut pour le
           tirage qui suit son obtention.
@@ -45,7 +46,7 @@ export default function Reglement() {
 
       <h2>6. Déroulement du tirage</h2>
       <p>
-        Le tirage a lieu chaque dimanche à 20 h, heure de Lomé. Au moment du tirage, un code aléatoire est généré. Les
+        Le tirage a lieu chaque dimanche à {drawTime}, heure de Lomé. Au moment du tirage, un code aléatoire est généré. Les
         tickets sont classés selon l'empreinte md5 de ce code suivi de leur numéro, puis les lots sont attribués dans
         cet ordre, du lot le plus élevé au plus faible. Le code est conservé et communiqué à toute personne qui le
         demande, ce qui permet de vérifier le résultat.
@@ -72,7 +73,7 @@ export default function Reglement() {
       <h2>10. Données personnelles</h2>
       <p>
         Les données utilisées pour le jeu sont décrites dans la{' '}
-        <a href="/confidentialite" style={{ color: 'var(--brand)', fontWeight: 600 }}>
+        <a className="text-link" href="/confidentialite">
           politique de confidentialité
         </a>
         .

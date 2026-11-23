@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ResolveButtons } from '@/components/admin/actions';
 import { dateShort, fcfa, relative } from '@/lib/format';
 import { METHOD } from '@/lib/labels';
+import { STALE_RECEIPT_DAYS } from '@/lib/rules';
 import { listDisputes, requireAdminPage } from '@/server/admin';
 
 export const metadata: Metadata = { title: 'Litiges' };
@@ -85,19 +86,18 @@ export default async function AdminDisputes() {
     <div className="view wide">
       <div className="page-head">
         <div>
-          <div className="eyebrow">Administration</div>
           <h1 className="h-app">Litiges de paiement</h1>
-          <p className="sub" style={{ margin: '4px 0 0', maxWidth: '70ch' }}>
+          <p className="sub page-intro">
             Avant de trancher, vérifie la référence auprès des deux personnes. Chaque décision est gardée dans le journal
             avec ta note.
           </p>
         </div>
       </div>
 
-      <h2 className="section-h" style={{ marginTop: 0 }}>
-        Reçus non validés depuis plus de 3 jours ({stale.length})
+      <h2 className="section-h mt-0">
+        Reçus non validés depuis plus de {STALE_RECEIPT_DAYS} jours ({stale.length})
       </h2>
-      <DisputeTable rows={stale} empty="Aucun reçu en attente depuis plus de 3 jours." />
+      <DisputeTable rows={stale} empty={`Aucun reçu en attente depuis plus de ${STALE_RECEIPT_DAYS} jours.`} />
 
       <h2 className="section-h">Versements en retard ({late.length})</h2>
       <DisputeTable rows={late} empty="Aucun versement en retard." />

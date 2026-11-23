@@ -1,4 +1,5 @@
 import 'server-only';
+import { DRAW, REMINDER_COOLDOWN_HOURS, drawWhen } from '@/lib/rules';
 
 export class HttpError extends Error {
   constructor(
@@ -25,14 +26,14 @@ const DB_ERRORS: Record<string, [number, string]> = {
   already_paid: [409, 'Ce versement est déjà validé.'],
   not_beneficiary: [403, 'Seul le bénéficiaire du tour valide les versements.'],
   not_due: [409, "Ce membre n'a rien en attente."],
-  already_reminded: [429, 'Tu lui as déjà envoyé un rappel dans les dernières 24 h.'],
+  already_reminded: [429, `Tu lui as déjà envoyé un rappel dans les dernières ${REMINDER_COOLDOWN_HOURS} h.`],
   bad_request: [400, 'Requête invalide.'],
   not_admin: [403, "Accès réservé à l'administration."],
   note_required: [400, 'Ajoute une note pour expliquer la décision.'],
   draw_done: [409, 'Ce tirage a déjà eu lieu.'],
-  draw_too_early: [409, 'Le tirage ne peut pas avoir lieu avant dimanche 20 h (heure de Lomé).'],
+  draw_too_early: [409, `Le tirage ne peut pas avoir lieu avant ${drawWhen}.`],
   no_prizes: [409, "Ajoute au moins un lot avant de lancer le tirage."],
-  max_tickets: [409, 'Cette personne a déjà 4 tickets pour ce tirage.'],
+  max_tickets: [409, `Cette personne a déjà ${DRAW.maxTicketsPerPerson} tickets pour ce tirage.`],
 };
 
 export function json(data: unknown, status = 200, extra?: Record<string, string>): Response {

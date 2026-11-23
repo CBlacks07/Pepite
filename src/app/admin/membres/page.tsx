@@ -17,7 +17,6 @@ export default async function AdminMembers({ searchParams }: { searchParams: Pro
     <div className="view wide">
       <div className="page-head">
         <div>
-          <div className="eyebrow">Administration</div>
           <h1 className="h-app">Membres</h1>
         </div>
       </div>
@@ -28,7 +27,7 @@ export default async function AdminMembers({ searchParams }: { searchParams: Pro
           Chercher
         </button>
       </form>
-      <p className="sub" style={{ marginTop: 0 }}>
+      <p className="sub mt-0">
         {num(users.length)} {users.length > 1 ? 'membres affichés' : 'membre affiché'}
         {users.length === 100 ? ' (les 100 plus récents)' : ''}.
       </p>
@@ -50,7 +49,7 @@ export default async function AdminMembers({ searchParams }: { searchParams: Pro
                   <Link className="link" href={`/admin/membres/${u.id}`}>
                     {u.name}
                   </Link>
-                  {u.isAdmin && <span className="pill p-gold" style={{ marginLeft: 8 }}>Admin</span>}
+                  {u.isAdmin && <span className="pill p-gold ml-8">Admin</span>}
                 </td>
                 <td className="r num">{u.circles}</td>
                 <td className="r num">{u.late}</td>

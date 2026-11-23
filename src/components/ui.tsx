@@ -33,7 +33,7 @@ export function Track({ n, done, cur }: { n: number; done: number; cur: number }
 
 export function Spinner({ label = 'Chargement' }: { label?: string }) {
   return (
-    <span role="status" aria-label={label} style={{ display: 'inline-grid' }}>
+    <span className="inline-grid" role="status" aria-label={label}>
       <Loader className="lucide spin" aria-hidden />
     </span>
   );
@@ -42,11 +42,11 @@ export function Spinner({ label = 'Chargement' }: { label?: string }) {
 export function PageSkeleton() {
   return (
     <div className="view" aria-busy="true">
-      <div className="skel" style={{ height: 44, width: '55%', marginBottom: 18 }} />
-      <div className="skel" style={{ height: 170, marginBottom: 12 }} />
-      <div className="skel" style={{ height: 70, marginBottom: 26 }} />
-      <div className="skel" style={{ height: 96, marginBottom: 10 }} />
-      <div className="skel" style={{ height: 96 }} />
+      <div className="skel skel-title" />
+      <div className="skel skel-hero" />
+      <div className="skel skel-bar" />
+      <div className="skel skel-card mb-10" />
+      <div className="skel skel-card" />
     </div>
   );
 }
@@ -55,15 +55,15 @@ export function ErrorNotice({ error, onRetry }: { error: unknown; onRetry?: () =
   return (
     <div className="notice error" role="alert">
       <CircleAlert strokeWidth={1.9} aria-hidden />
-      <div style={{ flex: 1 }}>
+      <div className="grow">
         <div>{errorMessage(error)}</div>
         {error instanceof ApiError && error.status === 401 ? (
-          <a href="/connexion?mode=code" className="linkbtn" style={{ paddingLeft: 0 }}>
+          <a href="/connexion?mode=code" className="linkbtn pl-0">
             Me reconnecter
           </a>
         ) : null}
         {onRetry && !(error instanceof ApiError && (error.status === 404 || error.status === 401)) && (
-          <button type="button" className="linkbtn" style={{ paddingLeft: 0 }} onClick={onRetry}>
+          <button type="button" className="linkbtn pl-0" onClick={onRetry}>
             Réessayer
           </button>
         )}
@@ -75,7 +75,7 @@ export function ErrorNotice({ error, onRetry }: { error: unknown; onRetry?: () =
 export function FormError({ error }: { error: unknown }) {
   if (!error) return null;
   return (
-    <p className="sub" role="alert" style={{ color: 'var(--late)', margin: '10px 0 0' }}>
+    <p className="sub text-danger m-t10" role="alert">
       {errorMessage(error)}
     </p>
   );

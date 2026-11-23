@@ -37,6 +37,7 @@ import { dateLong, dateShort, fcfa, initial, per } from '@/lib/format';
 import { useIsClient } from '@/lib/hooks';
 import { useCircle, useDeclare, useRemind, useValidate } from '@/lib/queries';
 import type { CircleData, Method } from '@/lib/types';
+import { TEXT } from '@/lib/rules';
 
 type PayTarget = { roundId: string; number: number; beneficiary: string; dueOn: string };
 type RemindTarget = { roundId: string; memberId: string; name: string; beneficiary: string; dueOn: string; iAmBeneficiary: boolean };
@@ -284,7 +285,7 @@ function Active({ d }: { d: CircleData }) {
     <>
       <div className="grid-2">
       <div className="col sticky">
-      <div className="card" style={{ paddingBottom: 4 }}>
+      <div className="card pb-4">
       <div className="ringwrap">
         <JarRing
           members={ring}
@@ -304,7 +305,7 @@ function Active({ d }: { d: CircleData }) {
         {fcfa(paid * c.amount)}
         <small>sur {fcfa(c.size * c.amount)}</small>
       </div>
-      <p className="sub center" style={{ margin: '6px 0 0' }}>
+      <p className="sub center m-t6">
         {done
           ? 'Cercle terminé : chacun a reçu sa cagnotte.'
           : `Tour ${cur.number} : cagnotte pour ${iReceive ? 'toi' : ben}. Versements avant le ${dateLong(cur.dueOn)}.`}
@@ -552,7 +553,7 @@ function Active({ d }: { d: CircleData }) {
         {pay && (
           <>
             <h2 className="sheet-h">Payer ma part</h2>
-            <p className="sub" style={{ margin: 0 }}>
+            <p className="sub m-0">
               {fcfa(c.amount)} pour {pay.beneficiary}, tour {pay.number} de {c.name}.
             </p>
             <span className="fl">Comment as-tu payé ?</span>
@@ -564,7 +565,7 @@ function Active({ d }: { d: CircleData }) {
                 </button>
               ))}
             </div>
-            <p className="sub" style={{ margin: '6px 0 0' }}>
+            <p className="sub m-t6">
               {method === 'mobile_money'
                 ? 'Mixx by Yas ou Flooz : recopie la référence de la transaction.'
                 : method === 'bank_transfer'
@@ -579,7 +580,7 @@ function Active({ d }: { d: CircleData }) {
                 <input
                   id="ref"
                   className="input"
-                  maxLength={80}
+                  maxLength={TEXT.paymentReferenceMax}
                   autoComplete="off"
                   placeholder={method === 'mobile_money' ? 'Référence Mixx ou Flooz' : 'Référence du virement'}
                   value={reference}
@@ -607,7 +608,7 @@ function Active({ d }: { d: CircleData }) {
               {declare.isPending ? <Spinner /> : <Send strokeWidth={1.9} aria-hidden />}
               <span>Envoyer à {pay.beneficiary} pour validation</span>
             </button>
-            <p className="sub center" style={{ margin: '10px 0 0' }}>
+            <p className="sub center m-t10">
               {pay.beneficiary} confirme quand l'argent arrive. Ton versement compte alors dans le bocal.
             </p>
           </>
@@ -626,7 +627,7 @@ function Active({ d }: { d: CircleData }) {
             <label className="fl" htmlFor="rm-text">
               Message
             </label>
-            <textarea id="rm-text" className="input" rows={4} maxLength={500} value={message} onChange={(e) => setMessage(e.target.value)} />
+            <textarea id="rm-text" className="input" rows={4} maxLength={TEXT.reminderMax} value={message} onChange={(e) => setMessage(e.target.value)} />
             <FormError error={remind.error ?? validate.error} />
             <button
               type="button"
@@ -704,7 +705,7 @@ function Rules({ d }: { d: CircleData }) {
             <ShieldCheck strokeWidth={1.9} aria-hidden />
             <span>
               Ordre tiré au sort, code de vérification <b className="num">{c.drawSeed}</b>.{' '}
-              <A href={`/app/cercle/${c.id}/ordre`} style={{ color: 'var(--brand)', fontWeight: 700 }}>
+              <A className="text-link" href={`/app/cercle/${c.id}/ordre`}>
                 Voir le tirage
               </A>
             </span>

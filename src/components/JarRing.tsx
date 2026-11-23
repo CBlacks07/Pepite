@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 
 import type { ContribStatus } from '@/lib/types';
 
@@ -40,7 +40,7 @@ export function JarRing({ members, onSelect }: { members: RingMember[]; onSelect
       <rect x="132" y="118" width="56" height="16" rx="4" className="neck" />
       <rect x={JAR.x} y={JAR.y} width={JAR.w} height={JAR.h} rx="22" className="jar" />
       <g clipPath="url(#jarclip)">
-        <g className="fill" style={{ transform: `translateY(${((1 - fill) * JAR.h).toFixed(1)}px)` }}>
+        <g className="fill" style={{ '--fill-y': `${((1 - fill) * JAR.h).toFixed(1)}px` } as CSSProperties}>
           <rect x={JAR.x - 4} y={JAR.y} width={JAR.w + 8} height={JAR.h + 4} className="liquid" />
           <rect x={JAR.x - 4} y={JAR.y} width={JAR.w + 8} height={JAR.h + 4} fill="url(#coins)" />
         </g>

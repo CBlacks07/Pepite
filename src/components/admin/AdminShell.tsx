@@ -28,7 +28,7 @@ export function AdminShell({ name, children }: { name: string; children: ReactNo
         <Link href="/admin" className="brand">
           P<span className="e">é</span>pite
         </Link>
-        <span className="side-label" style={{ paddingTop: 0 }}>
+        <span className="side-label pt-0">
           Administration
         </span>
         {links}

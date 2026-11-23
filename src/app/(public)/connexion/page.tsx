@@ -26,10 +26,7 @@ export default async function Page({
     <div className="wrap">
       <div className="auth-wrap">
         <div>
-          <div className="eyebrow">{invited ? 'Tu as été invité dans un cercle' : 'Bienvenue'}</div>
-          <h1>
-            P<span className="e">é</span>pite
-          </h1>
+          <h1>{invited ? "On t'attend dans un cercle" : 'Bienvenue sur Pépite'}</h1>
           <p className="lede">
             La tontine entre proches, avec un tirage bonus le dimanche. Chacun reçoit la cagnotte à son tour, et chaque
             versement fait à l'heure rapporte un ticket.

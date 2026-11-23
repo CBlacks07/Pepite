@@ -1,6 +1,7 @@
 import { requireMember } from '@/server/auth';
 import { db } from '@/server/db';
 import { json, route } from '@/server/http';
+import { DRAW } from '@/lib/rules';
 
 // Tickets pour le prochain tirage du dimanche, lots annoncés et derniers résultats.
 export const GET = route(async (request) => {
@@ -42,7 +43,7 @@ export const GET = route(async (request) => {
   return json({
     drawOn: stats.draw_on,
     inPlay: stats.in_play,
-    max: 4,
+    max: DRAW.maxTicketsPerPerson,
     tickets: mine.map((t) => ({ number: t.number, source: t.source, detail: t.detail, createdAt: t.created_at })),
     nextDue: nextDue ? { circle: nextDue.name, dueOn: nextDue.due_on } : null,
     sponsor: upcoming?.sponsor_name ?? null,

@@ -70,7 +70,7 @@ export function Wheel({
       g.rotate(a);
       const me = i === meIndex;
       g.fillStyle = me ? v('--gold-deep') : v('--ink');
-      g.font = `${me ? 700 : 600} ${Math.round(size * (n > 12 ? 0.04 : 0.05))}px Figtree, system-ui, sans-serif`;
+      g.font = `${me ? 700 : 600} ${Math.round(size * (n > 12 ? 0.04 : 0.05))}px ${v('--f-body')}`;
       const label = names[i].length > 10 ? names[i].slice(0, 9) + '.' : names[i];
       g.fillText(label, R - 16, 0);
       g.restore();
